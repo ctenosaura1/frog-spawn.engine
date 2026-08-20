@@ -7,8 +7,25 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Vulkan REQUIRED)
 add_subdirectory(third_party/glfw)
 
-add_executable(FrogSpawner src/main.cpp src/vk_engine.cpp src/vk_engine.h src/vk_initialisers.cpp src/vk_initialisers.h src/VkBootstrap.cpp src/VkBootstrap.h third_party/imgui/imgui.cpp third_party/imgui/imgui.h third_party/imgui/backends/imgui_impl_glfw.cpp third_party/imgui/backends/imgui_impl_glfw.h third_party/imgui/backends/imgui_impl_vulkan.cpp third_party/imgui/backends/imgui_impl_vulkan.h third_party/imgui/imgui_draw.cpp third_party/imgui/imgui_tables.cpp third_party/imgui/imgui_widgets.cpp)
+add_executable(FrogSpawner src/main.cpp src/vk_engine.cpp src/vk_engine.h src/vk_initialisers.cpp src/vk_initialisers.h third_party/imgui/imgui.h third_party/imgui/imgui.cpp third_party/imgui/imgui_demo.cpp third_party/imgui/backends/imgui_impl_glfw.cpp third_party/imgui/backends/imgui_impl_glfw.h third_party/imgui/backends/imgui_impl_vulkan.cpp third_party/imgui/backends/imgui_impl_vulkan.h third_party/imgui/imgui_draw.cpp third_party/imgui/imgui_tables.cpp third_party/imgui/imgui_widgets.cpp)
 
 
-target_include_directories(FrogSpawner PRIVATE src ${Vulkan_INCLUDE_DIRS} third_party/glfw/include third_party/glm third_party/imgui third_party/imgui/backends)
-target_link_libraries(FrogSpawner PRIVATE ${Vulkan_LIBRARIES} glfw)
+target_include_directories(FrogSpawner PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src 
+    ${Vulkan_INCLUDE_DIRS} 
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/glfw/include 
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/glm 
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui 
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui/backends
+)
+
+target_link_libraries(FrogSpawner PRIVATE 
+    Vulkan::Vulkan 
+    glfw
+)
+
+add_custom_command(TARGET FrogSpawner POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "$<TARGET_FILE_DIR:glfw>/glfw3.dll"
+    "$<TARGET_FILE_DIR:FrogSpawner>"
+)
